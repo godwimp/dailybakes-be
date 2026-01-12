@@ -55,9 +55,5 @@ jobs:
         npx prisma migrate deploy
         npm run build
         
-        if pm2 list | grep -q dailybakes-be; then
-          pm2 restart dailybakes-be
-        else
-          pm2 start dist/src/main.js --name dailybakes-be
-          pm2 save
-        fi
+        pm2 resrart ecosystem.config.js
+        pm2 save
