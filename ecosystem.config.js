@@ -1,6 +1,6 @@
 module.exports = {
     apps: [{
-        name: 'dailybakes-be',
+        name: '4000-dailybakes-be',
         script: './dist/src/main.js',
         instances: 1,
         autorestart: true,
