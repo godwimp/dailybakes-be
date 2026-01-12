@@ -5,7 +5,10 @@ import { JwtAuthGuard } from 'common/guards/jwt-auth.guard';
 import { CurrentUser } from 'common/decorators/current-user.decorator';
 import { Public } from 'common/decorators/public.decorator';
 
-@Controller('v1/auth')
+@Controller({
+    path: 'auth',
+    version: '1',
+})
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -13,7 +16,6 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
-    console.log('Masuk gak?');
     return this.authService.login(loginDto);
   }
 

@@ -7,15 +7,16 @@ import { AuthController } from './v1/auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaModule } from 'prisma/prisma.module';
 
+
 @Module({
   imports: [
+    ConfigModule,
     PrismaModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const secret =
-          configService.get('JWT_SECRET') || configService.get('jwt.secret');
+        const secret = configService.get<string>('JWT_SECRET');
         const expiresIn =
           configService.get('JWT_EXPIRES_IN') ||
           configService.get('jwt.expiresIn') ||
