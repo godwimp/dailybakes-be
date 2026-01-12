@@ -18,9 +18,11 @@ jobs:
      with: 
       node-version: 20
    
+
    - name: Install dependencies
      run: |
        npm install
+       npx prisma generate
        npm run build
    
    - name: Upload to VPS
