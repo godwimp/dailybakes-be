@@ -16,7 +16,10 @@ import { Roles } from 'common/decorators/roles.decorator';
 import { CurrentUser } from 'common/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
 
-@Controller('sales')
+@Controller({
+    path: 'sales',
+    version: '1',
+})
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}

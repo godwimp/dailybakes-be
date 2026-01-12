@@ -5,7 +5,7 @@ import { JwtAuthGuard } from 'common/guards/jwt-auth.guard';
 import { CurrentUser } from 'common/decorators/current-user.decorator';
 import { Public } from 'common/decorators/public.decorator';
 
-@Controller('auth')
+@Controller('v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

@@ -1,16 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from "@nestjs/common";
-import { SuppliersService } from "../suppliers.services";
-import { CreateSupplierDto } from "../dto/create-supplier.dto";
-import { UpdateSupplierDto } from "../dto/update-supplier.dto";
-import { JwtAuthGuard } from "common/guards/jwt-auth.guard";
-import { RolesGuard } from "common/guards/roles.guard";
-import { Roles } from "common/decorators/roles.decorator";
-import { Role } from "@prisma/client";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
+import { SuppliersService } from '../suppliers.services';
+import { CreateSupplierDto } from '../dto/create-supplier.dto';
+import { UpdateSupplierDto } from '../dto/update-supplier.dto';
+import { JwtAuthGuard } from 'common/guards/jwt-auth.guard';
+import { RolesGuard } from 'common/guards/roles.guard';
+import { Roles } from 'common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
-@Controller('suppliers')
+@Controller({
+  path: 'suppliers',
+  version: '1',
+})
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SuppliersController {
-    constructor(private readonly suppliersService: SuppliersService) {}
+  constructor(private readonly suppliersService: SuppliersService) {}
 
   @Post()
   @Roles(Role.ADMIN, Role.STOCK_MASTER)
@@ -40,7 +53,10 @@ export class SuppliersController {
 
   @Patch(':id')
   @Roles(Role.ADMIN, Role.STOCK_MASTER)
-  update(@Param('id') id: string, @Body() updateSupplierDto: UpdateSupplierDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSupplierDto: UpdateSupplierDto,
+  ) {
     return this.suppliersService.update(id, updateSupplierDto);
   }
 

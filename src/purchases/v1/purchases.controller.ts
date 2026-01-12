@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { PurchasesService } from '../purchases.service';
 import { CreatePurchaseDto } from '../dto/create-purchase.dto';
 import { JwtAuthGuard } from 'common/guards/jwt-auth.guard';
@@ -7,7 +16,10 @@ import { Roles } from 'common/decorators/roles.decorator';
 import { CurrentUser } from 'common/decorators/current-user.decorator';
 import { Role } from '@prisma/client';
 
-@Controller('purchases')
+@Controller({
+  path: 'purchases',
+  version: '1',
+})
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PurchasesController {
   constructor(private readonly purchasesService: PurchasesService) {}
