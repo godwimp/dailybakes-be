@@ -27,6 +27,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log(`dailybakes Backend running on: http://localhost:${port}/api`);
+  console.log(`dailybakes Backend Service running on: http://localhost:${port}/api`);
 }
 bootstrap();
