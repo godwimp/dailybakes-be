@@ -22,7 +22,6 @@ jobs:
      run: |
        npm install
        npx prisma generate
-       npx prisma migrate dev
        npm run build
    
    - name: Upload to VPS
@@ -44,6 +43,5 @@ jobs:
       script: |
          cd /root/backend/product-2025-11-arbas
          npm install --omit=dev
-         npx prisma generate
          pm2 startOrReload ecosystem.config.js
          pm2 save
