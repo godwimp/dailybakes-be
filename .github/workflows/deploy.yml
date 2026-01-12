@@ -61,15 +61,3 @@ jobs:
           pm2 start dist/src/main.js --name dailybakes-be
           pm2 save
         fi
-
-   - name: Restart PM2
-     uses: appleboy/ssh-action@v1.2.0
-     with:
-      host: ${{ secrets.SSH_HOST }}
-      username: ${{ secrets.SSH_USER }}
-      key: ${{ secrets.SSH_KEY }}
-      script: |
-         cd /root/backend/product-2025-11-arbas
-         npm install --omit=dev
-         pm2 startOrReload ecosystem.config.js
-         pm2 save
