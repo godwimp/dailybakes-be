@@ -29,7 +29,7 @@ jobs:
    - name: Build Project
      run: npm run build
    
-   - name: Deploy to VPS
+   - name: Copy to VPS
      uses: appleboy/scp-action@v0.1.7
      with: 
       host: ${{ secrets.SSH_HOST }}
@@ -38,6 +38,13 @@ jobs:
       source: "dist,package.json,package-lock.json,ecosystem.config.js,prisma"
       target: "/home/dev/backend/dailybakes-be"
       overwrite: true
+   
+   - name: Run commands on VPS
+     uses: appleboy/ssh-action@v1.0.3
+     with:
+      host: ${{ secrets.SSH_HOST }}
+      username: ${{ secrets.SSH_USER }}
+      key: ${{ secrets.SSH_KEY }}
       script: |
         cd /home/dev/backend/dailybakes-be
         git pull origin main
