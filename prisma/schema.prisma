@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  KASIR
+  STOCK_MASTER
+}
+
+enum MembershipType {
+  NONE
+  MONTHLY
+  YEARLY
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  QRIS
+}
+
+enum Unit {
+  KG
+  GRAM
+  LITER
+  ML
+  PCS
+}
+
+enum TransactionType {
+  PURCHASE
+  SALE
+}
+
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique
+  password    String
+  name        String
+  role        Role
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  purchases   Purchase[]
+  sales       Sale[]
+
+  @@map("users")
+}
+
+model Customer {
+  id              String             @id @default(uuid())
+  name            String        
+  email           String?            @unique
+  phone           String
+  address         String
+  membershipType  MembershipType     @default(NONE)
+  membershipStart DateTime?
+  membershipEnd   DateTime?
+  discount        Decimal            @default(0) @db.Decimal(5, 2)
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  sales Sale[]
+
+  @@map("customers")
+}
+
+model Supplier {
+  id             String     @id @default(uuid())
+  name           String
+  contact        String
+  phone          String
+  email          String?
+  address        String
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  purchases Purchase[]
+
+  @@map("suppliers")
+}
+
+model Ingredient {
+  id             String     @id @default(uuid())
+  name           String
+  description    String?
+  unit           Unit
+  stockQuantity  Decimal    @default(0) @db.Decimal(10, 2)
+  minStock       Decimal    @default(0) @db.Decimal(10, 2)
+  price          Decimal    @db.Decimal(12, 2)
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  purchaseItems  PurchaseItem[]
+  saleItems      SaleItem[]
+
+  @@map("ingredients")
+}
+
+model Purchase {
+  id            String   @id @default(uuid())
+  invoiceNumber String   @unique
+  supplierId    String
+  userId        String //Stock Master
+  totalAmount   Decimal  @db.Decimal(12,2)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  supplier     Supplier     @relation(fields: [supplierId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+  items        PurchaseItem[]
+
+  @@map ("purchases")
+}
+
+model PurchaseItem {
+  id           String   @id @default(uuid())
+  purchaseId   String
+  ingredientId String
+  quantity     Decimal  @db.Decimal(10, 2)
+  pricePerUnit Decimal  @db.Decimal(12, 2)
+  subtotal     Decimal  @db.Decimal(12, 2)
+  createdAt    DateTime @default(now())
+
+  purchase   Purchase   @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@map("purchase_items")
+}
+
+model Sale {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  customerId    String?
+  userId        String // Kasir yang melakukan penjualan
+  subtotal      Decimal       @db.Decimal(12, 2)
+  discount      Decimal       @default(0) @db.Decimal(12, 2)
+  totalAmount   Decimal       @db.Decimal(12, 2)
+  paymentMethod PaymentMethod
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  customer Customer?  @relation(fields: [customerId], references: [id])
+  user     User       @relation(fields: [userId], references: [id])
+  items    SaleItem[]
+
+  @@map("sales")
+}
+
+model SaleItem {
+  id           String   @id @default(uuid())
+  saleId       String
+  ingredientId String
+  quantity     Decimal  @db.Decimal(10, 2)
+  pricePerUnit Decimal  @db.Decimal(12, 2)
+  subtotal     Decimal  @db.Decimal(12, 2)
+  createdAt    DateTime @default(now())
+
+  sale       Sale       @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@map("sale_items")
+}
+
+model StockAlert {
+  id           String   @id @default(uuid())
+  ingredientId String
+  message      String
+  isResolved   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  resolvedAt   DateTime?
+
+  @@map("stock_alerts")
+}
