@@ -19,10 +19,14 @@ jobs:
       node-version: 20
    
    - name: Install dependencies
-     run: |
-       npm install
-       npx prisma generate
-       npm run build
+     run: npm ci
+   
+   - name: build project
+     run: npm run build
+   
+   - name: Generate Prisma Client
+     run: npx prisma generate
+   
    
    - name: Upload to VPS
      uses: appleboy/scp-action@v0.1.7
@@ -33,6 +37,14 @@ jobs:
       source: "dist,package.json,package-lock.json,ecosystem.config.js,prisma"
       target: "/home/dev/backend/dailybakes-be"
       overwrite: true
+      script: |
+        cd /home/dev/backend/dailybakes-be
+        git pull origin main
+        npm ci
+        npx prisma generate
+        npx prisma migrate deploy
+        npm run build
+        pm2 restart dailybakes-be
 
    - name: Restart PM2
      uses: appleboy/ssh-action@v1.2.0
